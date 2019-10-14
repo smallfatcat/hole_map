@@ -1,0 +1,50 @@
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>
+<head>
+<meta http-equiv='content-type' content='text/html; charset=ISO-8859-1'>
+  <title>Mapping Tool</title>
+  <link href="https://fonts.googleapis.com/css?family=Cuprum" rel="stylesheet">
+  <link rel='stylesheet' href='main.css' type='text/css'>
+
+  <script src='libs/jquery-3.2.1.js'></script>
+  <script src='libs/jquery-ui.js'></script>
+  <script src='bigvars.js'></script>
+  <script src='classes.js'></script>
+  <script src='main.js'></script>
+</head>
+<body>
+<p class="s4">Hole Map</p>
+<p class="s2">Current Map</p>
+<div class="ui-widget">
+  <label for="system_input">System: </label>
+  <input id="system_input" type="text">
+  <button class="ui-button ui-widget" onclick="add_system_click()">Add</button>
+</div>
+<div id="map_div">
+  <canvas id="map_canvas" width="800" height="600" style="border:1px solid #000000;"></canvas>
+</div>
+<div>
+  <span id="map_text"></span>
+</div>
+
+<!-- <label for="shipNumber">Number of Ships</label>
+<input id="shipNumber" value ="6" size="1">
+<button class="widget" id="reset">Reset</button></br>
+Jumps: <span id="jumps">0</span></br>
+Actual Mass: <span id="holeMass">0</span></br>
+Assumed Mass: <span id="holeMassAssumed">3000</span></br>
+<span id="massStatus">Over Half Mass</span></br>
+<span id="jumpButtons">
+	<button class="widget" id="1H">Hot</button><button class="widget" id="1C">Cold</button><span id="1S">safe</span></br>
+	<button class="widget" id="2H">Hot</button><button class="widget" id="2C">Cold</button><span id="2S">safe</span></br>
+	<button class="widget" id="3H">Hot</button><button class="widget" id="3C">Cold</button><span id="3S">safe</span></br>
+	<button class="widget" id="4H">Hot</button><button class="widget" id="4C">Cold</button><span id="4S">safe</span></br>
+	<button class="widget" id="5H">Hot</button><button class="widget" id="5C">Cold</button><span id="5S">safe</span></br>
+</span>
+ -->
+</br>
+
+</body>
+<footer>
+
+</footer>
+</html>
