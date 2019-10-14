@@ -1,3 +1,53 @@
+class Sig {
+	constructor(id, type, added, updated, target){
+		this._id = id;
+		this._type = type;
+		this._added = added;
+		this._updated = updated;
+		this._target = target;
+	}
+
+	set id(id){
+		this._id = id;
+	}
+
+	get id(){
+		return this._id;
+	}
+
+	set type(type){
+		this._type = type;
+	}
+
+	get type(){
+		return this._type;
+	}
+
+	set added(added){
+		this._added = added;
+	}
+
+	get added(){
+		return this._added;
+	}
+
+	set updated(updated){
+		this._updated = updated;
+	}
+
+	get updated(){
+		return this._updated;
+	}
+
+	set target(target){
+		this._target = target;
+	}
+
+	get target(){
+		return this._target;
+	}
+}
+
 class Pos {
 	constructor(x, y){
 		this._x = x;

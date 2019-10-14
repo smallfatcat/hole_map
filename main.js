@@ -9,12 +9,30 @@
 
 //js onload
 $( function() {
+	// setup Paste div
+	document.getElementById('editableDiv').addEventListener('paste', handlePaste);
+	
 	init_map();
 	//draw_map(systems);
 	add_mouse_listeners();
 	draw_map_canvas(systems);
 	attach_autocomplete('#system_input', list_solar_systems);
 } );
+
+function handlePaste (e) {
+    var clipboardData, pastedData;
+
+    // Stop data actually being pasted into div
+    e.stopPropagation();
+    e.preventDefault();
+
+    // Get pasted data via clipboard API
+    clipboardData = e.clipboardData || window.clipboardData;
+    pastedData = clipboardData.getData('Text');
+
+    // Do whatever with pasteddata
+    alert(pastedData);
+}
 
 function attach_autocomplete(id, list){
 	$( id ).autocomplete({
@@ -239,6 +257,16 @@ function getSystemId(name){
 	solarSystems.forEach(function(system){
 		if (name == system.label){
 			returnValue = system.value;
+		}
+	});
+	return returnValue;
+}
+
+function getSystemName(id){
+	var returnValue = 0;
+	solarSystems.forEach(function(system){
+		if (id == system.value){
+			returnValue = system.label;
 		}
 	});
 	return returnValue;
