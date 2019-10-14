@@ -29,6 +29,13 @@ function attach_autocomplete(id, list){
   });
 }
 
+function prepare_autocomplete(){
+	solarSystems.forEach(function(ss){
+		var name = ss.label;
+		list_solar_systems.push(name);
+	});
+}
+
 var br = "</br>"
 var list_solar_systems = [];
 prepare_autocomplete();
@@ -36,13 +43,6 @@ var systems = [];
 systemList = ["J172701", "Jita", "Amarr", "Tama", "Obe"];
 var systemWidth = 80,
 		systemHeight = 50;
-
-function prepare_autocomplete(){
-	solarSystems.forEach(function(ss){
-		var name = ss.label;
-		list_solar_systems.push(name);
-	});
-}
 
 function init_map(){
 	for(let i = 0; i < systemList.length; i++){
@@ -135,30 +135,31 @@ function add_mouse_listeners(){
 
 function draw_map_canvas(systems){
 	var canvas = document.getElementById("map_canvas");
+	var ctx = canvas.getContext("2d");
 	
 	// Draw systems
-	var ctx = canvas.getContext("2d");
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.font = "12px sans-serif";
 	ctx.lineWidth = 1;
 	ctx.strokeStyle = "#000000";
 	for(let i = 0; i < systems.length; i++){
+		// System Name
 		ctx.fillText(systems[i].name, systems[i].pos.x+3, systems[i].pos.y+13);
+		
+		// Statics
 		var staticText = "";
 		for(let j = 0; j < systems[i].statics.length ; j++){
 			staticText += systems[i].statics[j] + " ";
 		}
 		ctx.fillText(staticText, systems[i].pos.x+3, systems[i].pos.y+26);
+		
+		// System Box
 		ctx.beginPath();
 		ctx.rect(systems[i].pos.x, systems[i].pos.y, systemWidth, systemHeight);
 		ctx.stroke();
 	}
 
-	// Draw Curve
-	/*for(var i = 1; i < systems.length; i++){
-		drawLink(ctx, systems[0], systems[i])		
-	}*/
-
+	// Draw links
 	systems.forEach(function(system){
 		system.links.forEach(function(link){
 			drawLink(ctx, system, systems[link])		
