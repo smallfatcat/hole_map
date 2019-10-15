@@ -83,6 +83,14 @@ class System {
 		this._links = [];
 		this._statics = [];
 		this._pos = pos;
+		this._distance = 0;
+	}
+	get distance(){
+		return this._distance;
+	}
+
+	set distance(distance){
+		this._distance = distance;
 	}
 
 	get name(){
@@ -111,5 +119,10 @@ class System {
 
 	get statics(){
 		return this._statics;
+	}
+
+	addSig(id, type, added, updated, target){
+		var sig = new Sig(id, type, added, updated, target);
+		this._sigs.push(sig);
 	}
 }

@@ -1,10 +1,19 @@
-function buildGraph(){
+
+
+function buildGraph(preferRouteFlag){
   var graph = {};
   neighbours.forEach(function(system){
     var nodes = system.jumpNodes.split(":");
     var newNodes = {};
     nodes.forEach(function(node){
-      newNodes[node] = 1;  
+      var weight = 1;
+      if(parseFloat(system.trueSec)<0.5 && preferRouteFlag == "SAFER"){
+        weight = 100;
+      }
+      if(parseFloat(system.trueSec)>0.5 && preferRouteFlag == "LESS_SAFE"){
+        weight = 100;
+      }
+      newNodes[node] = weight;  
     });
     graph[system.systemId] = newNodes;
   });
@@ -159,18 +168,30 @@ var Graph = (function (undefined) {
 
 })();
 
-var map = buildGraph();
-
-var universe_map = new Graph(map);
-
-var route = universe_map.findShortestPath("30000142","30004623");
-
-console.log(printRoute(route));
-
 function printRoute(route){
   var routeNames = [];
   route.forEach(function(jump){
     routeNames.push(getSystemName(jump))
   });
   return routeNames;
+}
+
+function addSystemToGraph(map, system){
+  var systemId = getSystemId(system.name);
+  if(map[systemId] == undefined){
+    var n = {};
+    system.links.forEach(function(index){
+      var neighbourId = getSystemId(systems[index].name);
+      n[neighbourId] = 1;
+      map[neighbourId][systemId] = 1;
+    });
+    map[systemId] = n;
+  }
+  else{
+    system.links.forEach(function(index){
+      var neighbourId = getSystemId(systems[index].name);
+      map[systemId][neighbourId] = 1;
+      map[neighbourId][systemId] = 1;
+    });
+  }
 }

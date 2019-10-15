@@ -13,11 +13,31 @@ $( function() {
 	document.getElementById('editableDiv').addEventListener('paste', handlePaste);
 	
 	init_map();
-	//draw_map(systems);
+	
 	add_mouse_listeners();
+	// routing
+	calcRouteMap();
+	//draw_map(systems);
 	draw_map_canvas(systems);
 	attach_autocomplete('#system_input', list_solar_systems);
+
+	
 } );
+
+function calcRouteMap(){
+	var map = buildGraph("SAFER");
+	systems.forEach(function(system){
+		addSystemToGraph(map, system);
+	});
+	var universe_map = new Graph(map);
+	systems.forEach(function(system){
+		var systemId = getSystemId(system.name);
+		if(systemId != "31001263"){
+			system.distance = universe_map.findShortestPath("31001263",systemId).length-1;
+		}
+	});
+	//console.log(printRoute(route));
+}
 
 function handlePaste (e) {
     var clipboardData, pastedData;
@@ -58,7 +78,8 @@ var br = "</br>"
 var list_solar_systems = [];
 prepare_autocomplete();
 var systems = [];
-systemList = ["J172701", "Jita", "Amarr", "Tama", "Obe"];
+var systemList = ["J172701", "Jita", "Amarr", "Schmaeel"];
+var current_system = "NONE_SELECTED";
 var systemWidth = 80,
 		systemHeight = 50;
 
@@ -67,11 +88,10 @@ function init_map(){
 		add_system(systemList[i])
 		add_statics(systems[i]);
 	}
-	add_link(systems[0], 1);
-	add_link(systems[0], 2);
 	add_link(systems[0], 3);
-	add_link(systems[0], 4);
-	add_link(systems[3], 4);
+	//add_link(systems[0], 2);
+	//add_link(systems[0], 4);
+	//add_link(systems[3], 4);
 }
 
 function draw_map(systems){
@@ -97,11 +117,15 @@ function add_mouse_listeners(){
   function handleMouseDown(e){
     canMouseX=parseInt(e.clientX-offsetX);
     canMouseY=parseInt(e.clientY-offsetY);
+    current_system = "NONE_SELECTED";
+  	$("#map_text").empty();
     for(let i = 0; i < systems.length ; i++){
   		if(isInBox(systems[i], canMouseX, canMouseY)){  
   			// set the drag flag
     		isDragging=true;
     		systemDragged = i;
+    		$("#map_text").append(systems[i].name);
+  			current_system = systems[i].name;
     	}
     }
   }
@@ -127,6 +151,9 @@ function add_mouse_listeners(){
     if(isDragging){
     		systems[systemDragged].pos.x = canMouseX;
     		systems[systemDragged].pos.y = canMouseY;
+    		$("#map_text").empty();
+  			$("#map_text").append(systems[systemDragged].name);
+  			current_system = systems[systemDragged].name;
     		draw_map_canvas(systems);
     }
   }
@@ -137,21 +164,53 @@ function add_mouse_listeners(){
   $("#map_canvas").mouseout(function(e){handleMouseOut(e);});
 
 
-	// Add event listener for `click` events.
+	/*// Add event listener for `click` events.
 	canvas.addEventListener('click', function(event) {
   	var x = event.offsetX,
   			y = event.offsetY;
+  	current_system = "NONE_SELECTED";
+  	$("#map_text").empty();
   	systems.forEach(function(system){
   		if(isInBox(system, x, y)){
-  			$("#map_text").empty();
   			$("#map_text").append(system.name);
+  			current_system = system.name;
   		}
   	});
   	
-	}, false);
+	}, false);*/
+}
+
+function arrangeSystems(){
+	var columns = [0,0,0,0,0,0];
+	systems.forEach(function(system){
+		if(system.distance < 6){
+			columns[system.distance]++;
+		}
+		else{
+			columns[5]++;
+		}
+	});
+	var columnPositions = [];
+	columns.forEach(function(column){
+		var positions = [];
+		for(let i = 1; i <= column; i++){
+			positions.push(500/(column+1)*i);
+		}
+		columnPositions.push(positions);
+	});
+	systems.forEach(function(system){
+		system.pos.x = (150 * system.distance) + 50;
+		if(system.pos.x > 1100){
+			system.pos.x = 1100;
+		}
+
+		system.pos.y = columnPositions[system.distance < 6 ? system.distance : 5].shift();
+
+	});
 }
 
 function draw_map_canvas(systems){
+	arrangeSystems();
 	var canvas = document.getElementById("map_canvas");
 	var ctx = canvas.getContext("2d");
 	
@@ -163,6 +222,9 @@ function draw_map_canvas(systems){
 	for(let i = 0; i < systems.length; i++){
 		// System Name
 		ctx.fillText(systems[i].name, systems[i].pos.x+3, systems[i].pos.y+13);
+
+		// System Distance
+		ctx.fillText(systems[i].distance, systems[i].pos.x+3, systems[i].pos.y+39);
 		
 		// Statics
 		var staticText = "";
@@ -197,8 +259,18 @@ function drawLink(ctx, startSystem, endSystem){
 	var cex = ex - 30;
 	var cey = ey + 0;
 	var lineWidth = 0;
-	ctx.lineWidth = 2;
+	ctx.lineWidth = 4;
 	ctx.strokeStyle = "#BBBBBB";
+	ctx.beginPath();
+	ctx.moveTo(sx, sy);
+	ctx.quadraticCurveTo(csx, csy, mx, my);
+	ctx.stroke();
+	ctx.beginPath();
+	ctx.moveTo(ex, ey);
+	ctx.quadraticCurveTo(cex, cey, mx, my);
+	ctx.stroke();
+	ctx.lineWidth = 2;
+	ctx.strokeStyle = "#FFFFFF";
 	ctx.beginPath();
 	ctx.moveTo(sx, sy);
 	ctx.quadraticCurveTo(csx, csy, mx, my);
@@ -218,7 +290,7 @@ function isInBox(system, x, y){
 
 function add_system(name){
 	var system_spacing = 100;
-	var pos = new Pos(system_spacing+(systems.length*system_spacing), system_spacing);
+	var pos = new Pos(system_spacing, system_spacing);
 	var system = new System(name, pos);
 	systems.push(system);
 }
@@ -237,9 +309,26 @@ function add_system_click(){
 	if(validName!="NOT_VALID"){
 		add_system(validName);
 		add_statics(systems[systems.length-1]);
-		add_link(systems[0], systems.length-1)
+		if(current_system != "NONE_SELECTED"){
+			current_system_id = getIndexOfSystem(current_system);
+			add_link(systems[current_system_id], systems.length-1);
+			
+		}
+		calcRouteMap();
 		draw_map_canvas(systems);
 	}
+}
+
+function getIndexOfSystem(name){
+	var returnedIndex = 0;
+	for(let i= 0; i < systems.length; i++){
+		if(systems[i].name == name){
+			returnedIndex = i;
+			return returnedIndex;
+			break;
+		}
+	}
+	return returnedIndex;
 }
 
 function isValidSystem(newSystem){
