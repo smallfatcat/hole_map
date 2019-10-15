@@ -93,6 +93,11 @@ var systemWidth = 80,
 		arrangeY = 600,
 		arrangeX = 150;
 
+var linkCLicked = false;
+var linkFirstSystem = "";
+var g_canMouseX = 0;
+var g_canMouseY = 0;
+
 function init_map(){
 	for(let i = 0; i < systemList.length; i++){
 		add_system(systemList[i])
@@ -127,6 +132,7 @@ function add_mouse_listeners(){
   function handleMouseDown(e){
     canMouseX=parseInt(e.clientX-offsetX);
     canMouseY=parseInt(e.clientY-offsetY);
+    previous_current_system = current_system;
     current_system = "NONE_SELECTED";
   	$("#map_text").empty();
     for(let i = 0; i < systems.length ; i++){
@@ -136,8 +142,16 @@ function add_mouse_listeners(){
     		systemDragged = i;
     		$("#map_text").append(systems[i].name);
   			current_system = systems[i].name;
-
+  			if(linkCLicked && previous_current_system != current_system){
+  				linkCLicked = false;
+  				linkFirstSystem = "";
+  				add_link(systems[getIndexOfSystem(previous_current_system)], systems[getIndexOfSystem(current_system)]);
+  			}
     	}
+    }
+    if(linkCLicked && current_system == "NONE_SELECTED"){
+    	linkCLicked = false;
+    	linkFirstSystem = "";
     }
     draw_map_canvas(systems);
   }
@@ -159,6 +173,8 @@ function add_mouse_listeners(){
   function handleMouseMove(e){
     canMouseX=parseInt(e.clientX-offsetX);
     canMouseY=parseInt(e.clientY-offsetY);
+    g_canMouseX = canMouseX;
+    g_canMouseY = canMouseY;
     // if the drag flag is set, clear the canvas and draw the image
     if(isDragging){
     		systems[systemDragged].pos.x = canMouseX;
@@ -228,29 +244,40 @@ function draw_map_canvas(systems){
 	
 	// Draw systems
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.font = "12px sans-serif";
 	ctx.lineWidth = 1;
 	ctx.strokeStyle = "#000000";
+	ctx.font = "12px sans-serif";
+	
+	// Mouse
+	ctx.fillText(g_canMouseX +":"+g_canMouseY, 10, 10);
 	for(let i = 0; i < systems.length; i++){
+		ctx.font = "12px sans-serif";
 		// System Name
 		ctx.fillText(systems[i].name, systems[i].pos.x+3, systems[i].pos.y+13);
 
 		// System Distance
-		ctx.fillText(systems[i].distance, systems[i].pos.x+3, systems[i].pos.y+39);
-		
+		ctx.fillText(systems[i].distance, systems[i].pos.x+3, systems[i].pos.y+47);
+
+		// System Security
+		ctx.textAlign = "end";
+		ctx.fillText(systems[i].security, systems[i].pos.x+77, systems[i].pos.y+47);
+		ctx.textAlign = "start";
+
 		// Statics
 		var staticText = "";
 		for(let j = 0; j < systems[i].statics.length ; j++){
 			staticText += systems[i].statics[j] + " ";
 		}
-		ctx.fillText(staticText, systems[i].pos.x+3, systems[i].pos.y+26);
+		ctx.font = "12px sans-serif";
+		ctx.fillText(staticText, systems[i].pos.x+3, systems[i].pos.y+30);
 		
 		// System Box
+		ctx.strokeStyle = "#000000";
 		if(systems[i].name == current_system){
 			ctx.strokeStyle = "#DD0000";
 		}
-		else{
-			ctx.strokeStyle = "#000000";
+		if(systems[i].name == linkFirstSystem){
+			ctx.strokeStyle = "#00DD00";
 		}
 		ctx.beginPath();
 		ctx.rect(systems[i].pos.x, systems[i].pos.y, systemWidth, systemHeight);
@@ -258,10 +285,23 @@ function draw_map_canvas(systems){
 	}
 
 	// Draw links
+	var systemIndex = 0;
 	systems.forEach(function(system){
 		system.links.forEach(function(link){
-			drawLink(ctx, system, systems[link])		
+			var indexA = getIndexOfSystem(system.name);
+			var indexB = getIndexOfSystem(link);
+			if(system.distance <= systems[indexB].distance){
+				if(system.distance == systems[indexB].distance){
+					if(indexA<indexB){
+						drawLink(ctx, system, systems[indexB]);
+					}	
+				}
+				else{
+					drawLink(ctx, system, systems[indexB]);
+				}
+			}
 		});
+		systemIndex++;
 	});
 }
 
@@ -278,7 +318,13 @@ function drawLink(ctx, startSystem, endSystem){
 	var cey = ey + 0;
 	var lineWidth = 0;
 	ctx.lineWidth = 4;
-	ctx.strokeStyle = "#BBBBBB";
+	if(isJumpGate(startSystem, endSystem)){
+		ctx.strokeStyle = "#0000BB";
+	}
+	else{
+		ctx.strokeStyle = "#BBBBBB";
+	}
+	
 	ctx.beginPath();
 	ctx.moveTo(sx, sy);
 	ctx.quadraticCurveTo(csx, csy, mx, my);
@@ -299,6 +345,22 @@ function drawLink(ctx, startSystem, endSystem){
 	ctx.stroke();
 }
 
+function isJumpGate(startSystem, endSystem){
+	var returnValue = false;
+	neighbours.forEach(function(system){
+		if(system.systemName == startSystem.name){
+			var jumpNodes = system.jumpNodes.split(":");
+			jumpNodes.forEach(function(jumpNode){
+				if(jumpNode == getSystemId(endSystem.name)){
+					returnValue =  true;
+					//break;
+				}
+			});
+		}
+	});
+	return returnValue;
+}
+
 function isInBox(system, x, y){
 	if(x >= system.pos.x&& x <= system.pos.x+systemWidth && y >= system.pos.y && y <= system.pos.y+systemHeight){
 		return true;
@@ -309,13 +371,28 @@ function isInBox(system, x, y){
 function add_system(name){
 	var system_spacing = 100;
 	var pos = new Pos(system_spacing, system_spacing);
-	var system = new System(name, pos);
+	var system = new System(name, pos, get_system_security(name));
 	systems.push(system);
 }
 
-function add_link(system, link){
-	system.links.push(link);
+function get_system_security(name){
+	var system_security = "";
+	for(let i = 0; i < solarSystems.length;i++){
+		if(solarSystems[i].label == name){
+			system_security = solarSystems[i].security;
+			break;
+		}
+	}
+	return system_security;
 }
+
+function add_link(systemA, systemB){
+	systemA.links.push(systemB.name);
+	systemB.links.push(systemA.name);
+	calcRouteMap();
+	draw_map_canvas(systems);
+}
+
 
 function add_statics(system){
 	system.statics = getStatics(getSystemId(system.name));
@@ -329,10 +406,18 @@ function add_system_click(){
 		add_statics(systems[systems.length-1]);
 		if(current_system != "NONE_SELECTED"){
 			current_system_id = getIndexOfSystem(current_system);
-			add_link(systems[current_system_id], systems.length-1);
+			add_link(systems[current_system_id], systems[systems.length-1]);
 			
 		}
 		calcRouteMap();
+		draw_map_canvas(systems);
+	}
+}
+
+function link_click(){
+	if(current_system != "NONE_SELECTED"){
+		linkCLicked = true;
+		linkFirstSystem = current_system;
 		draw_map_canvas(systems);
 	}
 }

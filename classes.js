@@ -77,14 +77,24 @@ class Pos {
 }
 
 class System {
-	constructor(name, pos) {
+	constructor(name, pos, security) {
 		this._name = name;
 		this._sigs = [];
 		this._links = [];
 		this._statics = [];
 		this._pos = pos;
 		this._distance = 0;
+		this._security = security;
 	}
+
+	get security(){
+		return this._security;
+	}
+
+	set security(security){
+		this._security = security;
+	}
+	
 	get distance(){
 		return this._distance;
 	}

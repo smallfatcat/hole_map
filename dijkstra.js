@@ -180,7 +180,8 @@ function addSystemToGraph(map, system){
   var systemId = getSystemId(system.name);
   if(map[systemId] == undefined){
     var n = {};
-    system.links.forEach(function(index){
+    system.links.forEach(function(systemName){
+      var index = getIndexOfSystem(systemName);
       var neighbourId = getSystemId(systems[index].name);
       n[neighbourId] = 1;
       if(map[neighbourId] == undefined){
@@ -191,7 +192,8 @@ function addSystemToGraph(map, system){
     map[systemId] = n;
   }
   else{
-    system.links.forEach(function(index){
+    system.links.forEach(function(systemName){
+      var index = getIndexOfSystem(systemName);
       var neighbourId = getSystemId(systems[index].name);
       map[systemId][neighbourId] = 1;
       if(map[neighbourId] == undefined){
