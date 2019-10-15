@@ -33,7 +33,13 @@ function calcRouteMap(){
 	systems.forEach(function(system){
 		var systemId = getSystemId(system.name);
 		if(systemId != "31001263"){
-			system.distance = universe_map.findShortestPath("31001263",systemId).length-1;
+			var shortestPath = universe_map.findShortestPath("31001263",systemId);
+			if(shortestPath != undefined){
+				system.distance = shortestPath.length-1;
+			}
+			else{
+				system.distance = 9999;
+			}
 		}
 	});
 	//console.log(printRoute(route));
