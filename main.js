@@ -19,6 +19,7 @@ $( function() {
 	// routing
 	calcRouteMap();
 	//draw_map(systems);
+	arrangeSystems();
 	draw_map_canvas(systems);
 	attach_autocomplete('#system_input', list_solar_systems);
 
@@ -221,7 +222,7 @@ function arrangeSystems(){
 }
 
 function draw_map_canvas(systems){
-	arrangeSystems();
+	//arrangeSystems();
 	var canvas = document.getElementById("map_canvas");
 	var ctx = canvas.getContext("2d");
 	
@@ -334,6 +335,11 @@ function add_system_click(){
 		calcRouteMap();
 		draw_map_canvas(systems);
 	}
+}
+
+function arrange_click(){
+	arrangeSystems();
+	draw_map_canvas(systems);
 }
 
 function getIndexOfSystem(name){
