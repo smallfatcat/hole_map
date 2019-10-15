@@ -427,6 +427,34 @@ function arrange_click(){
 	draw_map_canvas(systems);
 }
 
+function add_adjacent_click(){
+	if(current_system != "NONE_SELECTED"){
+		var system = systems[getIndexOfSystem(current_system)];
+		neighbours.forEach(function(sys){
+			if(system.name == sys.systemName){
+				var jumpNodes = sys.jumpNodes.split(":");
+				jumpNodes.forEach(function(jumpNode){
+					var jumpNodeName = getSystemName(jumpNode);
+					if(!isSystemAdded(jumpNodeName)){
+						add_system(jumpNodeName);
+						add_link(system, systems[systems.length-1]);
+					}
+				});
+			}
+		});
+	}
+}
+
+function isSystemAdded(systemName){
+	var returnValue = false;
+	systems.forEach(function(system){
+		if(system.name == systemName){
+			returnValue = true;
+		}
+	});
+	return returnValue;
+}
+
 function getIndexOfSystem(name){
 	var returnedIndex = 0;
 	for(let i= 0; i < systems.length; i++){
