@@ -25,7 +25,7 @@ $( function() {
 } );
 
 function calcRouteMap(){
-	var map = buildGraph("SAFER");
+	var map = buildGraph("FASTEST");
 	systems.forEach(function(system){
 		addSystemToGraph(map, system);
 	});
@@ -84,17 +84,19 @@ var br = "</br>"
 var list_solar_systems = [];
 prepare_autocomplete();
 var systems = [];
-var systemList = ["J172701", "Jita", "Amarr", "Schmaeel"];
+var systemList = ["J172701", "Jita", "Amarr"];
 var current_system = "NONE_SELECTED";
 var systemWidth = 80,
-		systemHeight = 50;
+		systemHeight = 50,
+		arrangeY = 600,
+		arrangeX = 150;
 
 function init_map(){
 	for(let i = 0; i < systemList.length; i++){
 		add_system(systemList[i])
 		add_statics(systems[i]);
 	}
-	add_link(systems[0], 3);
+	//add_link(systems[0], 3);
 	//add_link(systems[0], 2);
 	//add_link(systems[0], 4);
 	//add_link(systems[3], 4);
@@ -132,8 +134,10 @@ function add_mouse_listeners(){
     		systemDragged = i;
     		$("#map_text").append(systems[i].name);
   			current_system = systems[i].name;
+
     	}
     }
+    draw_map_canvas(systems);
   }
 
   function handleMouseUp(e){
@@ -200,14 +204,14 @@ function arrangeSystems(){
 	columns.forEach(function(column){
 		var positions = [];
 		for(let i = 1; i <= column; i++){
-			positions.push(500/(column+1)*i);
+			positions.push(arrangeY/(column+1)*i);
 		}
 		columnPositions.push(positions);
 	});
 	systems.forEach(function(system){
-		system.pos.x = (150 * system.distance) + 50;
-		if(system.pos.x > 1100){
-			system.pos.x = 1100;
+		system.pos.x = (arrangeX * system.distance) + 50;
+		if(system.pos.x > 950){
+			system.pos.x = 950;
 		}
 
 		system.pos.y = columnPositions[system.distance < 6 ? system.distance : 5].shift();
@@ -240,6 +244,12 @@ function draw_map_canvas(systems){
 		ctx.fillText(staticText, systems[i].pos.x+3, systems[i].pos.y+26);
 		
 		// System Box
+		if(systems[i].name == current_system){
+			ctx.strokeStyle = "#DD0000";
+		}
+		else{
+			ctx.strokeStyle = "#000000";
+		}
 		ctx.beginPath();
 		ctx.rect(systems[i].pos.x, systems[i].pos.y, systemWidth, systemHeight);
 		ctx.stroke();

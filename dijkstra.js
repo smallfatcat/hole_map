@@ -194,6 +194,9 @@ function addSystemToGraph(map, system){
     system.links.forEach(function(index){
       var neighbourId = getSystemId(systems[index].name);
       map[systemId][neighbourId] = 1;
+      if(map[neighbourId] == undefined){
+        map[neighbourId] = {};
+      }
       map[neighbourId][systemId] = 1;
     });
   }
