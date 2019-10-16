@@ -1,0 +1,59 @@
+DCZ-526	Cosmic Signature			0.0%	18.58 AU
+PIU-118	Cosmic Signature			0.0%	19.43 AU
+AKF-200	Cosmic Signature			0.0%	16.27 AU
+
+
+
+35832	J172701 - Perseverance	Astrahus	1,092 km
+35833	J172701 - Cas' Brain Gooporium	Fortizar	0 m
+35825	J172701 - Patience	Raitaru	1,106 km
+35825	J172701 - EngiNERD	Raitaru	1,898 km
+
+PIU-118	Cosmic Signature			15.3%	20.26 AU
+AKF-200	Cosmic Signature			0.0%	15.00 AU
+DCZ-526	Cosmic Signature	Wormhole		27.7%	20.48 AU
+
+PIU-118	Cosmic Signature			0.0%	20.26 AU
+AKF-200	Cosmic Signature			0.0%	15.00 AU
+DCZ-526	Cosmic Signature	Wormhole	Unstable Wormhole	100.0%	20.40 AU
+
+PIU-118	Cosmic Signature			0.0%	20.26 AU
+AKF-200	Cosmic Signature	Data Site	Unsecured Frontier Database	100.0%	15.35 AU
+DCZ-526	Cosmic Signature	Wormhole	Unstable Wormhole	100.0%	20.40 AU
+
+AKF-200	Cosmic Signature	Data Site	Unsecured Frontier Database	100.0%	15.35 AU
+DCZ-526	Cosmic Signature	Wormhole	Unstable Wormhole	100.0%	20.40 AU
+PIU-118	Cosmic Signature	Wormhole	Unstable Wormhole	100.0%	19.69 AU
+
+35832	J172701 - Perseverance	Astrahus	1,090 km
+2233	Customs Office (J172701 IX)	Customs Office	11.1 AU
+2233	Customs Office (J172701 X)	Customs Office	91,883 km
+35833	J172701 - Cas' Brain Gooporium	Fortizar	0 m
+14	J172701 IX - Moon 1	Moon	11.1 AU
+2016	J172701 X	Planet (Barren)	89,358 km
+2016	J172701 IX	Planet (Barren)	11.1 AU
+35825	J172701 - Patience	Raitaru	1,104 km
+35825	J172701 - EngiNERD	Raitaru	1,896 km
+
+IBB-264	Cosmic Anomaly	Combat Site	Fortification Frontier Stronghold	100.0%	10.54 AU
+RXZ-749	Cosmic Anomaly	Combat Site	Outpost Frontier Stronghold 	100.0%	19.05 AU
+NIJ-854	Cosmic Anomaly	Combat Site	Fortification Frontier Stronghold	100.0%	15.36 AU
+UGQ-400	Cosmic Anomaly	Combat Site	Fortification Frontier Stronghold	100.0%	16.11 AU
+HNF-814	Cosmic Anomaly	Combat Site	Fortification Frontier Stronghold	100.0%	15.83 AU
+CAQ-050	Cosmic Anomaly	Combat Site	Fortification Frontier Stronghold	100.0%	21.61 AU
+RXV-497	Cosmic Anomaly	Combat Site	Outpost Frontier Stronghold 	100.0%	15.43 AU
+OSS-036	Cosmic Anomaly	Combat Site	Outpost Frontier Stronghold 	100.0%	16.80 AU
+AKF-200	Cosmic Signature	Data Site	Unsecured Frontier Database	100.0%	15.35 AU
+DCZ-526	Cosmic Signature	Wormhole	Unstable Wormhole	100.0%	20.40 AU
+PIU-118	Cosmic Signature	Wormhole	Unstable Wormhole	100.0%	19.69 AU
+
+35832	J172701 - Perseverance	Astrahus	1,090 km
+2233	Customs Office (J172701 IX)	Customs Office	11.1 AU
+2233	Customs Office (J172701 X)	Customs Office	91,883 km
+35833	J172701 - Cas' Brain Gooporium	Fortizar	0 m
+14	J172701 IX - Moon 1	Moon	11.1 AU
+2016	J172701 X	Planet (Barren)	89,358 km
+2016	J172701 IX	Planet (Barren)	11.1 AU
+35825	J172701 - Patience	Raitaru	1,104 km
+35825	J172701 - EngiNERD	Raitaru	1,896 km
+622	Minmatar Cruiser Wre	Stabber	-

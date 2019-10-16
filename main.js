@@ -61,7 +61,14 @@ function handlePaste (e) {
     pastedData = clipboardData.getData('Text');
 
     // Do whatever with pasteddata
-    alert(pastedData);
+    var scanResult = new ScanResult(pastedData);
+    scanResults.push(scanResult);
+    pasteDataTemp = pastedData;
+    
+    var sigHtml = scanResult.getSigHtml();
+    //console.log(sigHtml);
+		$("#sigs").empty();
+    $("#sigs").append(sigHtml);
 }
 
 function attach_autocomplete(id, list){
@@ -84,6 +91,15 @@ function prepare_autocomplete(){
 	});
 }
 
+//
+//
+//
+//
+//
+//
+// Initialise Everything
+
+
 var br = "</br>"
 var list_solar_systems = [];
 prepare_autocomplete();
@@ -99,6 +115,9 @@ var linkCLicked = false;
 var linkFirstSystem = "";
 var g_canMouseX = 0;
 var g_canMouseY = 0;
+
+var pasteDataTemp = "";
+var scanResults = [];
 
 function init_map(){
 	for(let i = 0; i < systemList.length; i++){
@@ -224,7 +243,7 @@ function arrangeSystems(){
 	columns.forEach(function(column){
 		var positions = [];
 		for(let i = 1; i <= column; i++){
-			positions.push(arrangeY/(column+1)*i);
+			positions.push((arrangeY/(column+1)*i)-25);
 		}
 		columnPositions.push(positions);
 	});
@@ -390,6 +409,13 @@ function add_system(name){
 	var pos = new Pos(system_spacing, system_spacing);
 	var system = new System(name, pos, get_system_security(name));
 	systems.push(system);
+
+	// Check if any existing systems have jump gate links to this system
+	systems.forEach(function(existingSystem){
+		if(isNeighbour(system.name, existingSystem.name)){
+			add_link(existingSystem, systems[getIndexOfSystem(system.name)]);
+		}
+	}); 
 }
 
 function get_system_security(name){
@@ -410,7 +436,6 @@ function add_link(systemA, systemB){
 	draw_map_canvas(systems);
 }
 
-
 function add_statics(system){
 	system.statics = getStatics(getSystemId(system.name));
 }
@@ -418,7 +443,7 @@ function add_statics(system){
 function add_system_click(){
 	var newSystem = $("#system_input")[0].value;
 	var validName = isValidSystem(newSystem);
-	if(validName!="NOT_VALID"){
+	if(validName!="NOT_VALID" && !isSystemAdded(validName)){
 		add_system(validName);
 		add_statics(systems[systems.length-1]);
 		if(current_system != "NONE_SELECTED"){
@@ -535,5 +560,25 @@ function getWHinfo(name){
 	return staticInfo;
 }
 
+function getNeighbours(systemName){
+	var neighbourList = [];
+	for(let i =0 ; i < neighbours.length; i++){
+		if(neighbours[i].systemName == systemName){
+			neighbourList = neighbours[i].jumpNodes.split(':');
+			break;
+		}
+	}
+	return neighbourList;
+}
+
+function isNeighbour(systemNameA, systemNameB){
+	var returnValue = false;
+	getNeighbours(systemNameA).forEach(function(jumpNode){
+		if(getSystemId(systemNameB) == jumpNode){
+			returnValue = true;
+		}
+	});
+	return returnValue;
+}
 
 

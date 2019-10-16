@@ -1,3 +1,44 @@
+class ScanResult {
+	constructor(pasteData){
+		this._rawData = pasteData;
+		this._lines = this._rawData.split('\n');
+		this._scanType = "UNKNOWN";
+		this._probeResultData = [];
+		this._dcsanResultData = [];
+		this.parsePasteData();
+	}
+
+	parsePasteData(){
+		for(let i = 0; i < this._lines.length; i++){
+			var result = this._lines[i].split('\t');
+			if(result.length==4){
+				this._dcsanResultData.push(result);
+				this._scanType = "DSCAN";
+			}
+			if(result.length==6){
+				this._probeResultData.push(result);
+				this._scanType = "PROBE";
+			}
+		}
+	}
+
+	getSigHtml(){
+		var outputHtml = "";
+		if(this._scanType = "PROBE"){
+			outputHtml = "<table><tr><td>ID</td><td>TYPE</td><td>SUBTYPE</td><td>NAME</td><td>PC</td><td>DISTANCE</td></tr>"
+			for(let i = 0; i < this._probeResultData.length; i++){
+				outputHtml += "<tr>";
+				for(let j = 0; j < this._probeResultData[i].length; j++){
+					outputHtml += "<td>"+ this._probeResultData[i][j] +"</td>";
+				}
+				outputHtml += "</tr>";
+			}
+			outputHtml += "</table>";
+		}
+		return outputHtml;
+	}
+}
+
 class Sig {
 	constructor(id, type, added, updated, target){
 		this._id = id;
