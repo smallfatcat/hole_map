@@ -38,9 +38,11 @@ function calcRouteMap(){
 			var shortestPath = universe_map.findShortestPath("31001263",systemId);
 			if(shortestPath != undefined){
 				system.distance = shortestPath.length-1;
+				system.route = shortestPath;
 			}
 			else{
 				system.distance = 9999;
+				system.route = [];
 			}
 		}
 	});
@@ -266,7 +268,7 @@ function draw_map_canvas(systems){
 		// Statics
 		var staticText = "";
 		for(let j = 0; j < systems[i].statics.length ; j++){
-			staticText += systems[i].statics[j] + " ";
+			staticText += systems[i].statics[j].class + " ";
 		}
 		ctx.font = "12px sans-serif";
 		ctx.fillText(staticText, systems[i].pos.x+3, systems[i].pos.y+30);
@@ -303,6 +305,21 @@ function draw_map_canvas(systems){
 		});
 		systemIndex++;
 	});
+
+	// Draw Route
+	drawRoute(ctx, systems[getIndexOfSystem(current_system)].route);
+}
+
+function drawRoute(ctx, route){
+	var routeTextList = printRoute(route);
+	var x = 10;
+	var y = 580;
+	ctx.strokeStyle = "#000000";
+	for(let i = 0; i < routeTextList.length; i++){
+		ctx.beginPath();
+		ctx.rect(x + (i * 20), y, 10, 10);
+		ctx.stroke();
+	}
 }
 
 function drawLink(ctx, startSystem, endSystem){
@@ -501,10 +518,21 @@ function getStatics(systemId){
 	staticList = [];
 	statics.forEach(function(static){
 		if(systemId == static.systemId){
-			staticList.push(static.name);
+			var staticInfo = getWHinfo(static.name);
+			staticList.push(staticInfo);
 		}
 	});
 	return staticList;
+}
+
+function getWHinfo(name){
+	var staticInfo = {};
+	wh_types.forEach(function(wh_type){
+		if(wh_type.type == name){
+			staticInfo = wh_type;
+		}
+	});
+	return staticInfo;
 }
 
 

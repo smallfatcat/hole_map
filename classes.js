@@ -85,6 +85,15 @@ class System {
 		this._pos = pos;
 		this._distance = 0;
 		this._security = security;
+		this._route = [];
+	}
+
+	get route(){
+		return this._route;
+	}
+
+	set route(route){
+		this._route = route;
 	}
 
 	get security(){
@@ -94,7 +103,7 @@ class System {
 	set security(security){
 		this._security = security;
 	}
-	
+
 	get distance(){
 		return this._distance;
 	}
