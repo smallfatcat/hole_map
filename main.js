@@ -79,10 +79,10 @@ function attach_autocomplete(id, list){
 }
 
 function prepare_autocomplete(){
-	solarSystems.forEach(function(ss){
-		var name = ss.label;
+	for (let [id, system] of Object.entries(g_systemObjects)){
+		var name = system.name;
 		list_solar_systems.push(name);
-	});
+	}
 }
 
 //
@@ -456,11 +456,11 @@ function isSystemAdded(systemName){
 
 function isValidSystem(newSystem){
 	var returnValue = "NOT_VALID";
-	solarSystems.forEach(function(ss){
-		if(ss.label.toUpperCase() == newSystem.toUpperCase()){
-			returnValue = ss.label;
+	for (let [id, system] of Object.entries(g_systemObjects)){
+		if(system.name.toUpperCase() == newSystem.toUpperCase()){
+			returnValue = system.name;
 		}
-	});
+	}
 	return returnValue;
 }
 

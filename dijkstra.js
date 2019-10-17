@@ -150,21 +150,25 @@ var Graph = (function (undefined) {
 
 function buildGraph(preferRouteFlag){
   var graph = {};
-  neighbours.forEach(function(system){
-    var nodes = system.jumpNodes.split(":");
+  for (let [id, system] of Object.entries(g_systemObjects)){
+    var nodes = system.neighbours;
     var newNodes = {};
+    /*var isLowSecurity = parseFloat(system.trueSec)<0.5;
+    var isHighSecurity = parseFloat(system.trueSec)>0.5;*/
+    var isLowSecurity = system.security != "H";
+    var isHighSecurity = system.security == "H";
     nodes.forEach(function(node){
       var weight = 1;
-      if(parseFloat(system.trueSec)<0.5 && preferRouteFlag == "SAFER"){
+      if(isLowSecurity && preferRouteFlag == "SAFER"){
         weight = 100;
       }
-      if(parseFloat(system.trueSec)>0.5 && preferRouteFlag == "LESS_SAFE"){
+      if(isHighSecurity && preferRouteFlag == "LESS_SAFE"){
         weight = 100;
       }
       newNodes[node] = weight;  
     });
     graph[system.systemId] = newNodes;
-  });
+  }
   return graph;
 }
 
