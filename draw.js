@@ -25,6 +25,20 @@ function arrangeSystems(){
 	};
 }
 
+function getSecurityColor(security){
+	var color = "#206ACC";
+	if(security == "H"){
+		color = "#20C129";
+	}
+	if(security == "L"){
+		color = "#DDA922";
+	}
+	if(security == "0.0" || security == "0"){
+		color = "#CC203E";
+	}
+	return color;
+}
+
 function draw_map_canvas(){
 	//arrangeSystems();
 	var canvas = document.getElementById("map_canvas");
@@ -34,7 +48,7 @@ function draw_map_canvas(){
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.lineWidth = 1;
 	ctx.strokeStyle = "#000000";
-	ctx.font = "12px sans-serif";
+	ctx.font = "12px Verdana bold";
 	
 	// Mouse
 	ctx.fillText(g_canMouseX +":"+g_canMouseY, 10, 10);
@@ -42,25 +56,27 @@ function draw_map_canvas(){
 	// Loop through each mapped system
 	for (let [id, system] of Object.entries(mappedSystems)){
 		ctx.font = "12px sans-serif";
-		// System Name
-		ctx.fillText(system.name, system.pos.x+3, system.pos.y+13);
+		
+		// Top line
+		var topLineText = system.security + " " +system.name;
+		ctx.fillStyle = getSecurityColor(system.security);
+		ctx.fillText(topLineText, system.pos.x+3, system.pos.y+13);
+		ctx.fillStyle = "#000000";
+
+		// Bottom Line
+		var bottomLine = "";
+		for(let j = 0; j < system.statics.length ; j++){
+			bottomLine += " " + getWHinfo(system.statics[j]).class;
+		}
+
+		ctx.textAlign = "end";
+		ctx.fillText(bottomLine, system.pos.x+77, system.pos.y+47);
+		ctx.textAlign = "start";
+
 
 		// System Distance
 		ctx.fillText(system.distance, system.pos.x+3, system.pos.y+47);
 
-		// System Security
-		ctx.textAlign = "end";
-		ctx.fillText(system.security, system.pos.x+77, system.pos.y+47);
-		ctx.textAlign = "start";
-
-		// System Statics
-		var staticText = "";
-		for(let j = 0; j < system.statics.length ; j++){
-			staticText += getWHinfo(system.statics[j]).class + " ";
-		}
-		ctx.font = "12px sans-serif";
-		ctx.fillText(staticText, system.pos.x+3, system.pos.y+30);
-		
 		// System Box
 		ctx.strokeStyle = "#000000";
 		if(system.name == current_system){
