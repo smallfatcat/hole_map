@@ -582,3 +582,17 @@ function isNeighbour(systemNameA, systemNameB){
 }
 
 
+// Test code
+
+function test(){
+	var mappedSystems = {};
+	var pos = new Pos(100, 100);
+	solarSystems.forEach(function(system){ 
+		// {value: "30000001", label: "Tanoo", security: "H"}
+		mappedSystems[system.value] = new System(system.label, pos, system.security);
+	});
+	/*for (let [id, system] of Object.entries(mappedSystems)) {
+		console.log(`${id}: ${system.name} : ${system.security}`);
+	}*/
+	return mappedSystems;
+}
