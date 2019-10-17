@@ -28,9 +28,6 @@ $( function() {
 
 var mappedSystems = {};
 
-// Old stuff Below
-
-
 var br = "</br>"
 var list_solar_systems = [];
 prepare_autocomplete();
@@ -60,7 +57,7 @@ function add_system(newSystemName){
 	var newSystemId = g_nameToId[newSystemName];
 	var newSystem = g_systemObjects[newSystemId];
 	// Check if any existing systems have jump gate links to this system
-	mappedSystems[newSystemId] = newSystem;
+	mappedSystems[newSystemId] = new System(newSystem);
 	for (let [existingSystemId, existingSystem] of Object.entries(mappedSystems)) {
 		if(isNeighbour(newSystem, existingSystem)){
 			add_link(existingSystem, newSystem);;

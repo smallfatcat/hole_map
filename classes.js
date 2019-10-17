@@ -118,16 +118,26 @@ class Pos {
 }
 
 class System {
-	constructor(name, pos, security) {
-		this._name = name;
-		this._sigs = [];
-		this._links = [];
-		this._statics = [];
-		this._pos = pos;
-		this._distance = 0;
-		this._security = security;
-		this._route = [];
-		this._neighbours = [];
+	constructor(system) {
+		// "30000001":{"name":"Tanoo","sigs":[],"links":[],"statics":[],"pos":{"x":100,"y":100},"distance":0,"security":"H","route":[],"neighbours":["30000003","30000005","30000007"]}
+		this._name = system.name;
+		this._sigs = system.sigs;
+		this._links = system.links;
+		this._statics = system.statics;
+		this._pos = system.pos;
+		this._distance = system.distance;
+		this._security = system.security;
+		this._route = system.route;
+		this._neighbours = system.neighbours;
+		this._id = system.id;
+	}
+
+	get id(){
+		return this._id;
+	}
+
+	set id(id){
+		this._id = id;
 	}
 
 	get neighbours(){

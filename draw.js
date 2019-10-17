@@ -21,9 +21,7 @@ function arrangeSystems(){
 		if(system.pos.x > 950){
 			system.pos.x = 950;
 		}
-
 		system.pos.y = columnPositions[system.distance < 6 ? system.distance : 5].shift();
-
 	};
 }
 
@@ -40,6 +38,8 @@ function draw_map_canvas(){
 	
 	// Mouse
 	ctx.fillText(g_canMouseX +":"+g_canMouseY, 10, 10);
+	
+	// Loop through each mapped system
 	for (let [id, system] of Object.entries(mappedSystems)){
 		ctx.font = "12px sans-serif";
 		// System Name
@@ -53,7 +53,7 @@ function draw_map_canvas(){
 		ctx.fillText(system.security, system.pos.x+77, system.pos.y+47);
 		ctx.textAlign = "start";
 
-		// Statics
+		// System Statics
 		var staticText = "";
 		for(let j = 0; j < system.statics.length ; j++){
 			staticText += getWHinfo(system.statics[j]).class + " ";
@@ -76,6 +76,7 @@ function draw_map_canvas(){
 
 	// Draw links
 	var systemIndex = 0;
+	// Loop through each mapped system
 	for (let [id, systemA] of Object.entries(mappedSystems)){
 		systemA.links.forEach(function(link){
 			var systemB = mappedSystems[g_nameToId[link]];
