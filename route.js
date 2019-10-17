@@ -167,7 +167,7 @@ function buildGraph(preferRouteFlag){
       }
       newNodes[node] = weight;  
     });
-    graph[system.systemId] = newNodes;
+    graph[system.id] = newNodes;
   }
   return graph;
 }
@@ -204,4 +204,27 @@ function addSystemToGraph(map, system){
       map[neighbourId][systemId] = 1;
     });
   }
+}
+
+function calcRouteMap(){
+  var map = buildGraph("FASTEST");
+  for (let [id, system] of Object.entries(mappedSystems)) {
+    addSystemToGraph(map, system);
+  }
+  var universe_map = new Graph(map);
+  for (let [id, system] of Object.entries(mappedSystems)) {
+    var systemId = g_nameToId[system.name];
+    if(systemId != "31001263"){
+      var shortestPath = universe_map.findShortestPath("31001263",systemId);
+      if(shortestPath != undefined){
+        system.distance = shortestPath.length-1;
+        system.route = shortestPath;
+      }
+      else{
+        system.distance = 9999;
+        system.route = [];
+      }
+    }
+  }
+  //console.log(printRoute(route));
 }
