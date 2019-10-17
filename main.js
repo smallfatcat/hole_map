@@ -15,12 +15,9 @@ $( function() {
 	add_mouse_listeners();
 	// routing
 	calcRouteMap();
-	//draw_map(systems);
 	arrangeSystems();
 	draw_map_canvas();
 	attach_autocomplete('#system_input', list_solar_systems);
-
-	
 } );
 
 function calcRouteMap(){
@@ -123,15 +120,6 @@ var scanResults = [];
 function init_map(){
 	for(let i = 0; i < systemList.length; i++){
 		add_system(systemList[i])
-	}
-}
-
-function draw_map(systems){
-	$("#map_text").empty();
-	for(let i = 0; i < systems.length; i++){
-		$("#map_text").append(systems[i].name + br);
-		$("#map_text").append(systems[i].pos.x + br);
-		$("#map_text").append(systems[i].pos.y + br);
 	}
 }
 
