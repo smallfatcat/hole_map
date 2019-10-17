@@ -1,25 +1,3 @@
-
-
-function buildGraph(preferRouteFlag){
-  var graph = {};
-  neighbours.forEach(function(system){
-    var nodes = system.jumpNodes.split(":");
-    var newNodes = {};
-    nodes.forEach(function(node){
-      var weight = 1;
-      if(parseFloat(system.trueSec)<0.5 && preferRouteFlag == "SAFER"){
-        weight = 100;
-      }
-      if(parseFloat(system.trueSec)>0.5 && preferRouteFlag == "LESS_SAFE"){
-        weight = 100;
-      }
-      newNodes[node] = weight;  
-    });
-    graph[system.systemId] = newNodes;
-  });
-  return graph;
-}
-
 // Graph code used from
 // https://github.com/andrewhayward/dijkstra
 
@@ -168,21 +146,42 @@ var Graph = (function (undefined) {
 
 })();
 
+// Eve nerd code
+
+function buildGraph(preferRouteFlag){
+  var graph = {};
+  neighbours.forEach(function(system){
+    var nodes = system.jumpNodes.split(":");
+    var newNodes = {};
+    nodes.forEach(function(node){
+      var weight = 1;
+      if(parseFloat(system.trueSec)<0.5 && preferRouteFlag == "SAFER"){
+        weight = 100;
+      }
+      if(parseFloat(system.trueSec)>0.5 && preferRouteFlag == "LESS_SAFE"){
+        weight = 100;
+      }
+      newNodes[node] = weight;  
+    });
+    graph[system.systemId] = newNodes;
+  });
+  return graph;
+}
+
 function printRoute(route){
   var routeNames = [];
   route.forEach(function(jump){
-    routeNames.push(getSystemName(jump))
+    routeNames.push(g_systemObjects[jump])
   });
   return routeNames;
 }
 
 function addSystemToGraph(map, system){
-  var systemId = getSystemId(system.name);
+  var systemId = g_nameToId[system.name];
   if(map[systemId] == undefined){
     var n = {};
     system.links.forEach(function(systemName){
-      var index = getIndexOfSystem(systemName);
-      var neighbourId = getSystemId(systems[index].name);
+      var neighbourId = g_nameToId[systemName];
       n[neighbourId] = 1;
       if(map[neighbourId] == undefined){
         map[neighbourId] = {};
@@ -193,8 +192,7 @@ function addSystemToGraph(map, system){
   }
   else{
     system.links.forEach(function(systemName){
-      var index = getIndexOfSystem(systemName);
-      var neighbourId = getSystemId(systems[index].name);
+      var neighbourId = g_nameToId[systemName];
       map[systemId][neighbourId] = 1;
       if(map[neighbourId] == undefined){
         map[neighbourId] = {};

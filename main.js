@@ -4,9 +4,6 @@
 // GitHub Repo: https://github.com/smallfatcat/eve-nerd
 // Date: 12th October 2019
 // Licence: MIT
-// Testing webhooks
-
-
 
 //js onload
 $( function() {
@@ -20,7 +17,7 @@ $( function() {
 	calcRouteMap();
 	//draw_map(systems);
 	arrangeSystems();
-	draw_map_canvas(systems);
+	draw_map_canvas();
 	attach_autocomplete('#system_input', list_solar_systems);
 
 	
@@ -28,12 +25,12 @@ $( function() {
 
 function calcRouteMap(){
 	var map = buildGraph("FASTEST");
-	systems.forEach(function(system){
+	for (let [id, system] of Object.entries(mappedSystems)) {
 		addSystemToGraph(map, system);
-	});
+	}
 	var universe_map = new Graph(map);
-	systems.forEach(function(system){
-		var systemId = getSystemId(system.name);
+	for (let [id, system] of Object.entries(mappedSystems)) {
+		var systemId = g_nameToId[system.name];
 		if(systemId != "31001263"){
 			var shortestPath = universe_map.findShortestPath("31001263",systemId);
 			if(shortestPath != undefined){
@@ -45,7 +42,7 @@ function calcRouteMap(){
 				system.route = [];
 			}
 		}
-	});
+	}
 	//console.log(printRoute(route));
 }
 
@@ -99,11 +96,15 @@ function prepare_autocomplete(){
 //
 // Initialise Everything
 
+var mappedSystems = {};
+
+// Old stuff Below
+
 
 var br = "</br>"
 var list_solar_systems = [];
 prepare_autocomplete();
-var systems = [];
+//var systems = [];
 var systemList = ["J172701", "Jita", "Amarr"];
 var current_system = "NONE_SELECTED";
 var systemWidth = 80,
@@ -122,12 +123,7 @@ var scanResults = [];
 function init_map(){
 	for(let i = 0; i < systemList.length; i++){
 		add_system(systemList[i])
-		add_statics(systems[i]);
 	}
-	//add_link(systems[0], 3);
-	//add_link(systems[0], 2);
-	//add_link(systems[0], 4);
-	//add_link(systems[3], 4);
 }
 
 function draw_map(systems){
@@ -156,25 +152,26 @@ function add_mouse_listeners(){
     previous_current_system = current_system;
     current_system = "NONE_SELECTED";
   	$("#map_text").empty();
-    for(let i = 0; i < systems.length ; i++){
-  		if(isInBox(systems[i], canMouseX, canMouseY)){  
-  			// set the drag flag
-    		isDragging=true;
-    		systemDragged = i;
-    		$("#map_text").append(systems[i].name);
-  			current_system = systems[i].name;
+  	// Check each system to see if clicked
+  	for (let [id, system] of Object.entries(mappedSystems)){
+  		if(isInBox(system, canMouseX, canMouseY)){
+  			isDragging=true;
+    		systemDragged = id;
+    		$("#map_text").append(system.name);
+  			current_system = system.name;
   			if(linkCLicked && previous_current_system != current_system){
   				linkCLicked = false;
   				linkFirstSystem = "";
-  				add_link(systems[getIndexOfSystem(previous_current_system)], systems[getIndexOfSystem(current_system)]);
+  				add_link(mappedSystems[g_nameToId[previous_current_system]], mappedSystems[g_nameToId[current_system]]);
   			}
-    	}
-    }
+  		}
+  	}
+
     if(linkCLicked && current_system == "NONE_SELECTED"){
     	linkCLicked = false;
     	linkFirstSystem = "";
     }
-    draw_map_canvas(systems);
+    draw_map_canvas();
   }
 
   function handleMouseUp(e){
@@ -198,12 +195,12 @@ function add_mouse_listeners(){
     g_canMouseY = canMouseY;
     // if the drag flag is set, clear the canvas and draw the image
     if(isDragging){
-    		systems[systemDragged].pos.x = canMouseX;
-    		systems[systemDragged].pos.y = canMouseY;
+    		mappedSystems[systemDragged].pos.x = canMouseX;
+    		mappedSystems[systemDragged].pos.y = canMouseY;
     		$("#map_text").empty();
-  			$("#map_text").append(systems[systemDragged].name);
-  			current_system = systems[systemDragged].name;
-    		draw_map_canvas(systems);
+  			$("#map_text").append(mappedSystems[systemDragged].name);
+  			current_system = mappedSystems[systemDragged].name;
+    		draw_map_canvas();
     }
   }
 
@@ -231,14 +228,14 @@ function add_mouse_listeners(){
 
 function arrangeSystems(){
 	var columns = [0,0,0,0,0,0];
-	systems.forEach(function(system){
+	for (let [id, system] of Object.entries(mappedSystems)){
 		if(system.distance < 6){
 			columns[system.distance]++;
 		}
 		else{
 			columns[5]++;
 		}
-	});
+	}
 	var columnPositions = [];
 	columns.forEach(function(column){
 		var positions = [];
@@ -247,7 +244,7 @@ function arrangeSystems(){
 		}
 		columnPositions.push(positions);
 	});
-	systems.forEach(function(system){
+	for (let [id, system] of Object.entries(mappedSystems)){
 		system.pos.x = (arrangeX * system.distance) + 50;
 		if(system.pos.x > 950){
 			system.pos.x = 950;
@@ -255,10 +252,10 @@ function arrangeSystems(){
 
 		system.pos.y = columnPositions[system.distance < 6 ? system.distance : 5].shift();
 
-	});
+	};
 }
 
-function draw_map_canvas(systems){
+function draw_map_canvas(){
 	//arrangeSystems();
 	var canvas = document.getElementById("map_canvas");
 	var ctx = canvas.getContext("2d");
@@ -271,62 +268,63 @@ function draw_map_canvas(systems){
 	
 	// Mouse
 	ctx.fillText(g_canMouseX +":"+g_canMouseY, 10, 10);
-	for(let i = 0; i < systems.length; i++){
+	for (let [id, system] of Object.entries(mappedSystems)){
 		ctx.font = "12px sans-serif";
 		// System Name
-		ctx.fillText(systems[i].name, systems[i].pos.x+3, systems[i].pos.y+13);
+		ctx.fillText(system.name, system.pos.x+3, system.pos.y+13);
 
 		// System Distance
-		ctx.fillText(systems[i].distance, systems[i].pos.x+3, systems[i].pos.y+47);
+		ctx.fillText(system.distance, system.pos.x+3, system.pos.y+47);
 
 		// System Security
 		ctx.textAlign = "end";
-		ctx.fillText(systems[i].security, systems[i].pos.x+77, systems[i].pos.y+47);
+		ctx.fillText(system.security, system.pos.x+77, system.pos.y+47);
 		ctx.textAlign = "start";
 
 		// Statics
 		var staticText = "";
-		for(let j = 0; j < systems[i].statics.length ; j++){
-			staticText += systems[i].statics[j].class + " ";
+		for(let j = 0; j < system.statics.length ; j++){
+			staticText += getWHinfo(system.statics[j]).class + " ";
 		}
 		ctx.font = "12px sans-serif";
-		ctx.fillText(staticText, systems[i].pos.x+3, systems[i].pos.y+30);
+		ctx.fillText(staticText, system.pos.x+3, system.pos.y+30);
 		
 		// System Box
 		ctx.strokeStyle = "#000000";
-		if(systems[i].name == current_system){
+		if(system.name == current_system){
 			ctx.strokeStyle = "#DD0000";
 		}
-		if(systems[i].name == linkFirstSystem){
+		if(system.name == linkFirstSystem){
 			ctx.strokeStyle = "#00DD00";
 		}
 		ctx.beginPath();
-		ctx.rect(systems[i].pos.x, systems[i].pos.y, systemWidth, systemHeight);
+		ctx.rect(system.pos.x, system.pos.y, systemWidth, systemHeight);
 		ctx.stroke();
 	}
 
 	// Draw links
 	var systemIndex = 0;
-	systems.forEach(function(system){
-		system.links.forEach(function(link){
-			var indexA = getIndexOfSystem(system.name);
-			var indexB = getIndexOfSystem(link);
-			if(system.distance <= systems[indexB].distance){
-				if(system.distance == systems[indexB].distance){
-					if(indexA<indexB){
-						drawLink(ctx, system, systems[indexB]);
+	for (let [id, systemA] of Object.entries(mappedSystems)){
+		systemA.links.forEach(function(link){
+			var systemB = mappedSystems[g_nameToId[link]];
+			if(systemA.distance <= systemB.distance){
+				if(systemA.distance == systemB.distance){
+					if(systemA.name<systemB.name){
+						drawLink(ctx, systemA, systemB);
 					}	
 				}
 				else{
-					drawLink(ctx, system, systems[indexB]);
+					drawLink(ctx, systemA, systemB);
 				}
 			}
 		});
 		systemIndex++;
-	});
+	}
 
 	// Draw Route
-	drawRoute(ctx, systems[getIndexOfSystem(current_system)].route);
+	if(current_system != "NONE_SELECTED"){
+		drawRoute(ctx, mappedSystems[g_nameToId[current_system]].route);
+	}
 }
 
 function drawRoute(ctx, route){
@@ -383,15 +381,9 @@ function drawLink(ctx, startSystem, endSystem){
 
 function isJumpGate(startSystem, endSystem){
 	var returnValue = false;
-	neighbours.forEach(function(system){
-		if(system.systemName == startSystem.name){
-			var jumpNodes = system.jumpNodes.split(":");
-			jumpNodes.forEach(function(jumpNode){
-				if(jumpNode == getSystemId(endSystem.name)){
-					returnValue =  true;
-					//break;
-				}
-			});
+	startSystem.neighbours.forEach(function(jumpNode){
+		if(jumpNode == g_nameToId[endSystem.name]){
+			returnValue =  true;
 		}
 	});
 	return returnValue;
@@ -404,55 +396,37 @@ function isInBox(system, x, y){
 	return false;
 }
 
-function add_system(name){
-	var system_spacing = 100;
-	var pos = new Pos(system_spacing, system_spacing);
-	var system = new System(name, pos, get_system_security(name));
-	systems.push(system);
-
+function add_system(newSystemName){
+	var newSystemId = g_nameToId[newSystemName];
+	var newSystem = g_systemObjects[newSystemId];
 	// Check if any existing systems have jump gate links to this system
-	systems.forEach(function(existingSystem){
-		if(isNeighbour(system.name, existingSystem.name)){
-			add_link(existingSystem, systems[getIndexOfSystem(system.name)]);
-		}
-	}); 
-}
-
-function get_system_security(name){
-	var system_security = "";
-	for(let i = 0; i < solarSystems.length;i++){
-		if(solarSystems[i].label == name){
-			system_security = solarSystems[i].security;
-			break;
+	mappedSystems[newSystemId] = newSystem;
+	for (let [existingSystemId, existingSystem] of Object.entries(mappedSystems)) {
+		if(isNeighbour(newSystem, existingSystem)){
+			add_link(existingSystem, newSystem);;
 		}
 	}
-	return system_security;
 }
 
 function add_link(systemA, systemB){
 	systemA.links.push(systemB.name);
 	systemB.links.push(systemA.name);
 	calcRouteMap();
-	draw_map_canvas(systems);
-}
-
-function add_statics(system){
-	system.statics = getStatics(getSystemId(system.name));
+	draw_map_canvas();
 }
 
 function add_system_click(){
 	var newSystem = $("#system_input")[0].value;
-	var validName = isValidSystem(newSystem);
-	if(validName!="NOT_VALID" && !isSystemAdded(validName)){
-		add_system(validName);
-		add_statics(systems[systems.length-1]);
+	var newSystemName = isValidSystem(newSystem);
+	var newSystemId = g_nameToId[newSystemName];
+	if(newSystemName!="NOT_VALID" && !isSystemAdded(newSystemName)){
+		add_system(newSystemName);
 		if(current_system != "NONE_SELECTED"){
-			current_system_id = getIndexOfSystem(current_system);
-			add_link(systems[current_system_id], systems[systems.length-1]);
-			
+			current_system_id = g_nameToId[current_system];
+			add_link(mappedSystems[current_system_id], mappedSystems[newSystemId]);	
 		}
 		calcRouteMap();
-		draw_map_canvas(systems);
+		draw_map_canvas();
 	}
 }
 
@@ -460,28 +434,23 @@ function link_click(){
 	if(current_system != "NONE_SELECTED"){
 		linkCLicked = true;
 		linkFirstSystem = current_system;
-		draw_map_canvas(systems);
+		draw_map_canvas();
 	}
 }
 
 function arrange_click(){
 	arrangeSystems();
-	draw_map_canvas(systems);
+	draw_map_canvas();
 }
 
 function add_adjacent_click(){
 	if(current_system != "NONE_SELECTED"){
-		var system = systems[getIndexOfSystem(current_system)];
-		neighbours.forEach(function(sys){
-			if(system.name == sys.systemName){
-				var jumpNodes = sys.jumpNodes.split(":");
-				jumpNodes.forEach(function(jumpNode){
-					var jumpNodeName = getSystemName(jumpNode);
-					if(!isSystemAdded(jumpNodeName)){
-						add_system(jumpNodeName);
-						add_link(system, systems[systems.length-1]);
-					}
-				});
+		var system = mappedSystems[g_nameToId[current_system]];
+		system.neighbours.forEach(function(jumpNode){
+			var jumpNodeName = g_systemObjects[jumpNode].name;
+			if(!isSystemAdded(jumpNodeName)){
+				add_system(jumpNodeName);
+				add_link(system, mappedSystems[g_nameToId[jumpNodeName]]);
 			}
 		});
 	}
@@ -489,24 +458,12 @@ function add_adjacent_click(){
 
 function isSystemAdded(systemName){
 	var returnValue = false;
-	systems.forEach(function(system){
+	for (let [id, system] of Object.entries(mappedSystems)){
 		if(system.name == systemName){
 			returnValue = true;
 		}
-	});
-	return returnValue;
-}
-
-function getIndexOfSystem(name){
-	var returnedIndex = 0;
-	for(let i= 0; i < systems.length; i++){
-		if(systems[i].name == name){
-			returnedIndex = i;
-			return returnedIndex;
-			break;
-		}
 	}
-	return returnedIndex;
+	return returnValue;
 }
 
 function isValidSystem(newSystem){
@@ -519,37 +476,6 @@ function isValidSystem(newSystem){
 	return returnValue;
 }
 
-function getSystemId(name){
-	var returnValue = 0;
-	solarSystems.forEach(function(system){
-		if (name == system.label){
-			returnValue = system.value;
-		}
-	});
-	return returnValue;
-}
-
-function getSystemName(id){
-	var returnValue = 0;
-	solarSystems.forEach(function(system){
-		if (id == system.value){
-			returnValue = system.label;
-		}
-	});
-	return returnValue;
-}
-
-function getStatics(systemId){
-	staticList = [];
-	statics.forEach(function(static){
-		if(systemId == static.systemId){
-			var staticInfo = getWHinfo(static.name);
-			staticList.push(staticInfo);
-		}
-	});
-	return staticList;
-}
-
 function getWHinfo(name){
 	var staticInfo = {};
 	wh_types.forEach(function(wh_type){
@@ -560,39 +486,14 @@ function getWHinfo(name){
 	return staticInfo;
 }
 
-function getNeighbours(systemName){
-	var neighbourList = [];
-	for(let i =0 ; i < neighbours.length; i++){
-		if(neighbours[i].systemName == systemName){
-			neighbourList = neighbours[i].jumpNodes.split(':');
-			break;
-		}
-	}
-	return neighbourList;
-}
-
-function isNeighbour(systemNameA, systemNameB){
+function isNeighbour(systemA, systemB){
 	var returnValue = false;
-	getNeighbours(systemNameA).forEach(function(jumpNode){
-		if(getSystemId(systemNameB) == jumpNode){
+	var systemBId = g_nameToId[systemB.name];
+	var neighbours = systemA.neighbours;
+	neighbours.forEach(function(neighbour){
+		if(neighbour == systemBId){
 			returnValue = true;
 		}
 	});
 	return returnValue;
-}
-
-
-// Test code
-
-function test(){
-	var mappedSystems = {};
-	var pos = new Pos(100, 100);
-	solarSystems.forEach(function(system){ 
-		// {value: "30000001", label: "Tanoo", security: "H"}
-		mappedSystems[system.value] = new System(system.label, pos, system.security);
-	});
-	/*for (let [id, system] of Object.entries(mappedSystems)) {
-		console.log(`${id}: ${system.name} : ${system.security}`);
-	}*/
-	return mappedSystems;
 }

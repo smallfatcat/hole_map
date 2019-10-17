@@ -127,6 +127,15 @@ class System {
 		this._distance = 0;
 		this._security = security;
 		this._route = [];
+		this._neighbours = [];
+	}
+
+	get neighbours(){
+		return this._neighbours;
+	}
+
+	set neighbours(neighbours){
+		this._neighbours = neighbours;
 	}
 
 	get route(){
