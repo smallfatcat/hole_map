@@ -39,6 +39,44 @@ function getSecurityColor(security){
 	return color;
 }
 
+function getLinkNodes(a, b){
+	var cpOffset = [new Pos(0, -10), new Pos(10, 0), new Pos(0, 10), new Pos(-10, 0)];
+	var nodesA = getNodes(a);
+	var nodesB = getNodes(b);
+	var shortestDist2 = Infinity;
+	var aIndex = 0;
+	var bIndex = 0;
+	for(let s = 0; s < 4; s++){
+		for(let e = 0; e < 4; e++){
+			var dist = dist2(nodesA[s], nodesB[e]);
+			if(dist < shortestDist2){
+				shortestDist2 = dist;
+				aIndex = s;
+				bIndex = e;
+			}
+		}
+	}
+	var linkNodes = [nodesA[aIndex], nodesB[bIndex]];
+	var cpNodes = [cpOffset[aIndex], cpOffset[bIndex]];
+	var nodes = [linkNodes, cpNodes];
+	return nodes;
+}
+
+function dist2(a, b){
+	var distance2 = (b.x - a.x)**2 + (b.y - a.y)**2;
+	return distance2;
+}
+
+function getNodes(a){
+	var am = new Pos(systemWidth / 2, systemHeight / 2);
+	var au = new Pos(a.x + am.x, a.y);
+	var ad = new Pos(a.x + am.x, a.y + systemHeight);
+	var ar = new Pos(a.x + systemWidth, a.y + am.y);
+	var al = new Pos(a.x, a.y + am.y);
+	var nodes = [au, ar, ad, al];
+	return nodes;
+}
+
 function draw_map_canvas(){
 	//arrangeSystems();
 	var canvas = document.getElementById("map_canvas");
@@ -129,16 +167,20 @@ function drawRoute(ctx, route){
 }
 
 function drawLink(ctx, startSystem, endSystem){
-	var sx = startSystem.pos.x + systemWidth;
-	var sy = startSystem.pos.y + (systemHeight/2);
-	var ex = endSystem.pos.x;
-	var ey = endSystem.pos.y+ (systemHeight/2);
+	var nodes = getLinkNodes(startSystem.pos, endSystem.pos);
+	var linkNodes = nodes[0];
+	var cpnodes = nodes[1];
+
+	var sx = linkNodes[0].x;
+	var sy = linkNodes[0].y;
+	var ex = linkNodes[1].x;
+	var ey = linkNodes[1].y;
 	var mx = sx+(ex - sx)/2;
 	var my = sy+(ey - sy)/2;
-	var csx = sx + 30;
-	var csy = sy + 0;
-	var cex = ex - 30;
-	var cey = ey + 0;
+	var csx = sx + cpnodes[0].x;
+	var csy = sy + cpnodes[0].y;
+	var cex = ex + cpnodes[1].x;
+	var cey = ey + cpnodes[1].y;
 	var lineWidth = 0;
 	ctx.lineWidth = 4;
 	if(isJumpGate(startSystem, endSystem)){
