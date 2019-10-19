@@ -155,19 +155,21 @@ function draw_map_canvas(){
 		ctx.fillText(topLineText, system.pos.x+3, system.pos.y+13);
 		ctx.fillStyle = "#000000";
 
-		// Bottom Line
-		var bottomLine = "";
+		// Bottom Line right
+		var bottomLineRight = "";
 		for(let j = 0; j < system.statics.length ; j++){
-			bottomLine += " " + getWHinfo(system.statics[j]).class;
+			bottomLineRight += " " + getWHinfo(system.statics[j]).class;
 		}
 
 		ctx.textAlign = "end";
-		ctx.fillText(bottomLine, system.pos.x+77, system.pos.y+47);
+		ctx.fillText(bottomLineRight, system.pos.x+77, system.pos.y+47);
 		ctx.textAlign = "start";
 
 
-		// System Distance
-		ctx.fillText(system.distance, system.pos.x+3, system.pos.y+47);
+		// Bottom Line left
+		var bottomLineLeft = system.distance + " " + (system.ship_kills != undefined ? system.ship_kills : " ");
+		bottomLineLeft += " " + (system.npc_kills != undefined ? system.npc_kills : " ");
+		ctx.fillText(bottomLineLeft, system.pos.x+3, system.pos.y+47);
 
 		// System Box
 		ctx.strokeStyle = "#000000";

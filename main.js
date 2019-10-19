@@ -9,17 +9,52 @@
 $( function() {
 	// setup Paste div
 	document.getElementById('editableDiv').addEventListener('paste', handlePaste);
-	
+
+	// Initialise map with home systems
 	init_map();
+
+	// Get kills from ESI
+	ESI_getKills();
 	
 	add_mouse_listeners();
 	// routing
 	calcRouteMap();
+
+	// Draw Map
 	arrangeSystems();
 	draw_map_canvas();
 	attach_autocomplete('#system_input', list_solar_systems);
 } );
 
+
+async function ESI_getKills(){
+	fetch('https://esi.evetech.net/latest/universe/system_kills/?datasource=tranquility')
+    .then(function(response) {
+      if (!response.ok) {
+        throw new Error("HTTP error, status = " + response.status);
+      }
+      return response.json();
+    })
+    .then(function(json) {
+    	console.log(json);
+    	add_kills(json);
+    })
+}
+
+function add_kills(json){
+	json.forEach(function(systemData){
+		var system = g_systemObjects[systemData.system_id];
+		var mappedSystem = mappedSystems[systemData.system_id];
+		system.ship_kills = systemData.ship_kills;
+		system.pod_kills = systemData.pod_kills;
+		system.npc_kills = systemData.npc_kills;
+		if(mappedSystem != undefined){
+			mappedSystem.ship_kills = systemData.ship_kills;
+			mappedSystem.pod_kills = systemData.pod_kills;
+			mappedSystem.npc_kills = systemData.npc_kills;
+		}
+	})
+}
 
 //
 //
@@ -32,8 +67,8 @@ var br = "</br>"
 var list_solar_systems = [];
 prepare_autocomplete();
 //var systems = [];
-var systemList = ["J172701", "Jita", "Amarr", "Nalvula", "Jan"];
-//var systemList = ["J172701", "Jita", "Amarr"];
+//var systemList = ["J172701", "Jita", "Amarr", "Nalvula", "Jan"];
+var systemList = ["J172701", "Jita", "Amarr"];
 var current_system = "NONE_SELECTED";
 var systemWidth = 80,
 		systemHeight = 50,
@@ -52,8 +87,8 @@ function init_map(){
 	for(let i = 0; i < systemList.length; i++){
 		add_system(systemList[i]);
 	}
-	add_link(mappedSystems[g_nameToId["J172701"]],mappedSystems[g_nameToId["Nalvula"]]);
-	add_link(mappedSystems[g_nameToId["J172701"]],mappedSystems[g_nameToId["Jan"]]);
+	//add_link(mappedSystems[g_nameToId["J172701"]],mappedSystems[g_nameToId["Nalvula"]]);
+	//add_link(mappedSystems[g_nameToId["J172701"]],mappedSystems[g_nameToId["Jan"]]);
 }
 
 function add_system(newSystemName){

@@ -130,6 +130,33 @@ class System {
 		this._route = system.route;
 		this._neighbours = system.neighbours;
 		this._id = system.id;
+		this._ship_kills = system.ship_kills || 0;
+		this._pod_kills = system.pod_kills || 0;
+		this._npc_kills = system.npc_kills || 0;
+	}
+
+	get ship_kills(){
+		return this._ship_kills;
+	}
+
+	set ship_kills(ship_kills){
+		this._ship_kills = ship_kills;
+	}
+
+	get pod_kills(){
+		return this._pod_kills;
+	}
+
+	set pod_kills(pod_kills){
+		this._pod_kills = pod_kills;
+	}
+
+	get npc_kills(){
+		return this._npc_kills;
+	}
+
+	set npc_kills(npc_kills){
+		this._npc_kills = npc_kills;
 	}
 
 	get id(){
