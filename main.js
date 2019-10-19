@@ -67,8 +67,8 @@ var br = "</br>"
 var list_solar_systems = [];
 prepare_autocomplete();
 //var systems = [];
-//var systemList = ["J172701", "Jita", "Amarr", "Nalvula", "Jan"];
-var systemList = ["J172701", "Jita", "Amarr"];
+var systemList = ["J172701","Jita", "Moutid", "Amarr", "Fobiner", "Huna", "Karan", "Hophib", "9-VO0Q", "PNQY-Y", "RP2-OQ", "YVBE-E", "BYXF-Q", "AC2E-3", "C-C99Z", "CL-BWB", "R3W-XU", "P5-EFH", "L-A5XP", "D4KU-5", "YRNJ-8", "3ZTV-V", "9D6O-M", "J143505"];
+//var systemList = ["J172701", "Jita", "Amarr"];
 var current_system = "NONE_SELECTED";
 var systemWidth = 80,
 		systemHeight = 40,
@@ -87,8 +87,9 @@ function init_map(){
 	for(let i = 0; i < systemList.length; i++){
 		add_system(systemList[i]);
 	}
-	//add_link(mappedSystems[g_nameToId["J172701"]],mappedSystems[g_nameToId["Nalvula"]]);
-	//add_link(mappedSystems[g_nameToId["J172701"]],mappedSystems[g_nameToId["Jan"]]);
+	add_link(mappedSystems[g_nameToId["J172701"]],mappedSystems[g_nameToId["P5-EFH"]]);
+	add_link(mappedSystems[g_nameToId["J172701"]],mappedSystems[g_nameToId["J143505"]]);
+	add_link(mappedSystems[g_nameToId["J143505"]],mappedSystems[g_nameToId["Moutid"]]);
 }
 
 function add_system(newSystemName){
