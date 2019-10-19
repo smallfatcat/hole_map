@@ -265,8 +265,14 @@ function drawLink(ctx, startSystem, endSystem){
 	var sy = linkNodes[0].y;
 	var ex = linkNodes[1].x;
 	var ey = linkNodes[1].y;
-	var mx = sx+(ex - sx)/2;
-	var my = sy+(ey - sy)/2;
+	var modx = 0;
+	var mody = 0;
+	if((cpnodes[0].x == -10 && cpnodes[1].x == -10)||(cpnodes[0].x == 10 && cpnodes[1].x == 10)){
+		modx = cpnodes[0].x;
+		mody = cpnodes[0].y;
+	}
+	var mx = (sx+(ex - sx)/2)+modx;
+	var my = (sy+(ey - sy)/2)+mody;
 	var csx = sx + cpnodes[0].x;
 	var csy = sy + cpnodes[0].y;
 	var cex = ex + cpnodes[1].x;
