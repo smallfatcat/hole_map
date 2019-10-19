@@ -1,11 +1,65 @@
+function layout(){
+	var layers = [];
+	for(let [id, system] of Object.entries(mappedSystems)){
+		if(layers[system.distance] == undefined){
+			var layer = [system.name];
+			layers[system.distance] = layer;
+		}
+		else{
+			layers[system.distance].push(system.name);
+		}
+	}
+	return layers;
+}
+
+function process_layers(){
+	oldLayers = layout();
+	var newLayers = [];
+	newLayers[0] = oldLayers[0];
+	var activeLayers = [];
+	oldLayers.forEach(function(layer, distance){
+		activeLayers.push(distance);
+	});
+	activeLayers.forEach(function(distance){
+		// Each system in layer
+		if(newLayers[distance] == undefined){
+			newLayers[distance] = oldLayers[distance];
+		}
+		newLayers[distance].forEach(function(systemName){
+			var system = mappedSystems[g_nameToId[systemName]];
+			// Each link in system
+			system.links.forEach(function(linkSystemName){
+				var linkSystem = mappedSystems[g_nameToId[linkSystemName]];
+				// add to newLayers with index distance if it doesn't exist there
+				if(newLayers[linkSystem.distance] == undefined){
+					newLayers[linkSystem.distance] = [];
+				}
+				if(newLayers[linkSystem.distance].indexOf(linkSystem.name) == -1){
+					newLayers[linkSystem.distance].push(linkSystem.name);
+				}
+			});
+		});
+	});
+	return newLayers;
+}
+
+function pull_system(system, layer){
+	var systemIndex = layer.indexOf(system);
+	var newlayer = [];
+	if(systemIndex != -1){
+		newlayer = layer.splice(systemIndex, 1);
+	}
+	return newlayer[0];
+}
+
 function arrangeSystems(){
-	var columns = [0,0,0,0,0,0];
+	var columns = [0,0,0,0,0,0,0,0];
 	for (let [id, system] of Object.entries(mappedSystems)){
-		if(system.distance < 6){
+		if(system.distance < 8){
 			columns[system.distance]++;
 		}
 		else{
-			columns[5]++;
+			columns[7]++;
 		}
 	}
 	var columnPositions = [];
@@ -18,10 +72,10 @@ function arrangeSystems(){
 	});
 	for (let [id, system] of Object.entries(mappedSystems)){
 		system.pos.x = (arrangeX * system.distance) + 50;
-		if(system.pos.x > 950){
-			system.pos.x = 950;
+		if(system.pos.x > 1100){
+			system.pos.x = 1100;
 		}
-		system.pos.y = columnPositions[system.distance < 6 ? system.distance : 5].shift();
+		system.pos.y = columnPositions[system.distance < 8 ? system.distance : 7].shift();
 	};
 }
 

@@ -32,7 +32,8 @@ var br = "</br>"
 var list_solar_systems = [];
 prepare_autocomplete();
 //var systems = [];
-var systemList = ["J172701", "Jita", "Amarr"];
+var systemList = ["J172701", "Jita", "Amarr", "Nalvula", "Jan"];
+//var systemList = ["J172701", "Jita", "Amarr"];
 var current_system = "NONE_SELECTED";
 var systemWidth = 80,
 		systemHeight = 50,
@@ -49,8 +50,10 @@ var scanResults = [];
 
 function init_map(){
 	for(let i = 0; i < systemList.length; i++){
-		add_system(systemList[i])
+		add_system(systemList[i]);
 	}
+	add_link(mappedSystems[g_nameToId["J172701"]],mappedSystems[g_nameToId["Nalvula"]]);
+	add_link(mappedSystems[g_nameToId["J172701"]],mappedSystems[g_nameToId["Jan"]]);
 }
 
 function add_system(newSystemName){
