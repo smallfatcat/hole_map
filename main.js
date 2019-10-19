@@ -71,7 +71,7 @@ prepare_autocomplete();
 var systemList = ["J172701", "Jita", "Amarr"];
 var current_system = "NONE_SELECTED";
 var systemWidth = 80,
-		systemHeight = 50,
+		systemHeight = 40,
 		arrangeY = 600,
 		arrangeX = 150;
 

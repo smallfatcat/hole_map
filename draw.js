@@ -53,6 +53,37 @@ function pull_system(system, layer){
 }
 
 function arrangeSystems(){
+	var layers = process_layers();
+	var columns = [0,0,0,0,0,0,0,0];
+	layers.forEach(function(layer, distance){
+		layer.forEach(function(systemName){
+			if(distance > 7){
+				distance = 7;
+			}
+			columns[distance]++;
+		});
+	});
+	var columnPositions = [];
+	columns.forEach(function(column){
+		var positions = [];
+		for(let i = 1; i <= column; i++){
+			positions.push((arrangeY/(column+1)*i)-25);
+		}
+		columnPositions.push(positions);
+	});
+	layers.forEach(function(layer, distance){
+		layer.forEach(function(systemName){
+			var system = mappedSystems[g_nameToId[systemName]];
+			system.pos.x = (arrangeX * system.distance) + 50;
+			if(system.pos.x > 1100){
+				system.pos.x = 1100;
+			}
+			system.pos.y = columnPositions[system.distance < 8 ? system.distance : 7].shift();
+		});
+	});
+}
+
+function arrangeSystemsOld(){
 	var columns = [0,0,0,0,0,0,0,0];
 	for (let [id, system] of Object.entries(mappedSystems)){
 		if(system.distance < 8){
@@ -104,6 +135,9 @@ function getLinkNodes(a, b){
 		for(let e = 0; e < 4; e++){
 			var dist = dist2(nodesA[s], nodesB[e]);
 			if(dist < shortestDist2){
+				if((s%2 == 0 || e%2 == 0) && dist > 2500){
+					continue;
+				}
 				shortestDist2 = dist;
 				aIndex = s;
 				bIndex = e;
@@ -162,14 +196,14 @@ function draw_map_canvas(){
 		}
 
 		ctx.textAlign = "end";
-		ctx.fillText(bottomLineRight, system.pos.x+77, system.pos.y+47);
+		ctx.fillText(bottomLineRight, system.pos.x+77, system.pos.y+systemHeight-3);
 		ctx.textAlign = "start";
 
 
 		// Bottom Line left
 		var bottomLineLeft = system.distance + " " + (system.ship_kills != undefined ? system.ship_kills : " ");
 		bottomLineLeft += " " + (system.npc_kills != undefined ? system.npc_kills : " ");
-		ctx.fillText(bottomLineLeft, system.pos.x+3, system.pos.y+47);
+		ctx.fillText(bottomLineLeft, system.pos.x+3, system.pos.y+systemHeight-3);
 
 		// System Box
 		ctx.strokeStyle = "#000000";
