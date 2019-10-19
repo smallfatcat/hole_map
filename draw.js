@@ -40,6 +40,13 @@ function process_layers(){
 			});
 		});
 	});
+	oldLayers.forEach(function(layer, distance){
+		layer.forEach(function(systemName){
+			if(newLayers[distance].indexOf(systemName) == -1){
+				newLayers[distance].push(systemName);
+			}
+		});
+	});
 	return newLayers;
 }
 
@@ -224,14 +231,16 @@ function draw_map_canvas(){
 	for (let [id, systemA] of Object.entries(mappedSystems)){
 		systemA.links.forEach(function(link){
 			var systemB = mappedSystems[g_nameToId[link]];
-			if(systemA.distance <= systemB.distance){
-				if(systemA.distance == systemB.distance){
-					if(systemA.name<systemB.name){
+			if(systemB != undefined){
+				if(systemA.distance <= systemB.distance){
+					if(systemA.distance == systemB.distance){
+						if(systemA.name<systemB.name){
+							drawLink(ctx, systemA, systemB);
+						}	
+					}
+					else{
 						drawLink(ctx, systemA, systemB);
-					}	
-				}
-				else{
-					drawLink(ctx, systemA, systemB);
+					}
 				}
 			}
 		});

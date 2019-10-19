@@ -45,9 +45,7 @@ function add_mouse_listeners(){
             $("#map_text").append(system.name);
             current_system = system.name;
             if(linkCLicked && previous_current_system != current_system){
-                linkCLicked = false;
-                linkFirstSystem = "";
-                add_link(mappedSystems[g_nameToId[previous_current_system]], mappedSystems[g_nameToId[current_system]]);
+                link_click();
             }
         }
     }

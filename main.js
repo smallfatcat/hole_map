@@ -104,6 +104,26 @@ function add_system(newSystemName){
 	}
 }
 
+function delete_system(system){
+	var links = system.links;
+	links.forEach(function(linkSystemName){
+		var linkSystem = mappedSystems[g_nameToId[linkSystemName]];
+		var index = linkSystem.links.indexOf(system.name);
+		linkSystem.links.splice(index,1);
+	})
+	mappedSystems[system.id].links = [];
+	delete mappedSystems[system.id];
+	current_system = "NONE_SELECTED";
+	calcRouteMap();
+	draw_map_canvas();
+}
+
+function delete_system_click(){
+	if(current_system != "NONE_SELECTED"){
+		delete_system(mappedSystems[g_nameToId[current_system]]);
+	}
+}
+
 function add_system_click(){
 	var newSystem = $("#system_input")[0].value;
 	var newSystemName = isValidSystem(newSystem);
@@ -120,18 +140,31 @@ function add_system_click(){
 }
 
 function add_link(systemA, systemB){
-	systemA.links.push(systemB.name);
-	systemB.links.push(systemA.name);
-	calcRouteMap();
+	// Add links if they don't already exist
+	if(systemA.links.indexOf(systemB.name) == -1){
+		systemA.links.push(systemB.name);
+	}
+	if(systemB.links.indexOf(systemA.name) == -1){
+		systemB.links.push(systemA.name);
+	}
+	//calcRouteMap();
 	draw_map_canvas();
 }
 
-function link_click(){
+function link_button_click(){
 	if(current_system != "NONE_SELECTED"){
 		linkCLicked = true;
 		linkFirstSystem = current_system;
 		draw_map_canvas();
 	}
+}
+
+function link_click(){
+	linkCLicked = false;
+  linkFirstSystem = "";
+  add_link(mappedSystems[g_nameToId[previous_current_system]], mappedSystems[g_nameToId[current_system]]);
+  calcRouteMap();
+  draw_map_canvas();
 }
 
 function arrange_click(){
@@ -150,6 +183,8 @@ function add_adjacent_click(){
 			}
 		});
 	}
+	calcRouteMap();
+	draw_map_canvas();
 }
 
 function isSystemAdded(systemName){
